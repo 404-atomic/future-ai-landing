@@ -1,0 +1,40 @@
+import React from 'react';
+import { Layout } from 'antd';
+import styled from 'styled-components';
+import Navbar from './components/Navbar/Navbar';
+import Features from './components/Features/Features';
+import About from './components/About/About';
+import Service from './components/Service/Service';
+import Product from './components/Product/Product';
+import Contact from './components/Contact/Contact';
+import Hero from './components/Hero/Hero';
+import Footer from './components/Footer/Footer';
+
+const { Content } = Layout;
+
+const StyledLayout = styled(Layout)`
+  min-height: 100vh;
+`;
+
+const StyledContent = styled(Content)`
+  margin-top: 64px;
+`;
+
+const App: React.FC = () => {
+  return (
+    <StyledLayout>
+      <Navbar />
+      <StyledContent>
+        <Hero />
+        <Features />
+        <About />
+        <Service />
+        <Product />
+        <Contact />
+      </StyledContent>
+      <Footer />
+    </StyledLayout>
+  );
+};
+
+export default App;

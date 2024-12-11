@@ -32,6 +32,7 @@ const Description = styled.p`
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
+  
 `;
 
 const ContentGrid = styled.div`

@@ -17,12 +17,24 @@ const NavContainer = styled.nav<{ scrolled: boolean }>`
   padding: 0 50px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   z-index: 1000;
   transition: all 0.3s ease;
 
   @media (max-width: 768px) {
     padding: 0 20px;
+    justify-content: space-between;
+  }
+`;
+
+const NavContent = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+  margin-right: 32px;
+
+  @media (max-width: 768px) {
+    margin-right: 0;
   }
 `;
 
@@ -48,6 +60,7 @@ const Logo = styled(motion.div)`
 const NavLinks = styled(motion.div)<{ isOpen: boolean }>`
   display: flex;
   gap: 32px;
+  margin-left: auto;
 
   @media (max-width: 768px) {
     position: fixed;
@@ -64,6 +77,7 @@ const NavLinks = styled(motion.div)<{ isOpen: boolean }>`
     height: auto;
     max-height: calc(100vh - 70px);
     overflow-y: auto;
+    margin-left: 0;
   }
 `;
 
@@ -119,25 +133,44 @@ const StyledNavItem = styled(motion.div)`
   }
 `;
 
-const MenuButton = styled(motion.button)`
+const RightSection = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 20px;
+
+  @media (max-width: 768px) {
+    gap: 16px;
+  }
+`;
+
+const FlagToggle = styled.div`
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  
+  img {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+`;
+
+const MenuIcon = styled(motion.button)`
   display: none;
   background: none;
   border: none;
-  font-size: 24px;
   cursor: pointer;
-  color: ${theme.colors.primary};
   padding: 8px;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-
-  &:hover {
-    background: ${theme.colors.primary}10;
-  }
+  color: #333;
+  font-size: 24px;
 
   @media (max-width: 768px) {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: block;
   }
 `;
 
@@ -176,9 +209,10 @@ const MENU_ITEMS = [
   { to: 'contact', label: 'Contact' }
 ];
 
-const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
+const Navbar: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isEnglish, setIsEnglish] = useState(true);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -206,41 +240,44 @@ const Navbar = () => {
 
   return (
     <NavContainer scrolled={scrolled}>
-      <Logo
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.5 }}
-        onClick={() => {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-          closeMenu();
-        }}
-      >
-        FutureAI
-      </Logo>
-      
-      <MenuButton
-        onClick={toggleMenu}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-      >
-        {isOpen ? <CloseOutlined /> : <MenuOutlined />}
-      </MenuButton>
+      <NavContent>
+        <Logo
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
+          onClick={() => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            closeMenu();
+          }}
+        >
+          Future AI
+        </Logo>
 
-      <NavLinks
-        isOpen={isOpen}
-        initial={false}
-        animate={{ opacity: 1 }}
-      >
-        {MENU_ITEMS.map(({ to, label }) => (
-          <NavItem
-            key={to}
-            to={to}
-            onClick={closeMenu}
-          >
-            {label}
-          </NavItem>
-        ))}
-      </NavLinks>
+        <NavLinks
+          isOpen={isOpen}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          {MENU_ITEMS.map((item) => (
+            <NavItem key={item.to} to={item.to} onClick={() => setIsOpen(false)}>
+              {item.label}
+            </NavItem>
+          ))}
+        </NavLinks>
+      </NavContent>
+
+      <RightSection>
+        <FlagToggle onClick={() => setIsEnglish(!isEnglish)}>
+          <img
+            src={isEnglish ? "/flags/united-kingdom.png" : "/flags/china.png"}
+            alt={isEnglish ? "English" : "Chinese"}
+          />
+        </FlagToggle>
+        <MenuIcon onClick={() => setIsOpen(!isOpen)}>
+          {isOpen ? <CloseOutlined /> : <MenuOutlined />}
+        </MenuIcon>
+      </RightSection>
     </NavContainer>
   );
 };

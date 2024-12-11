@@ -22,7 +22,7 @@ const Title = styled.h2`
   color: ${theme.colors.primary};
   margin-bottom: 24px;
   font-weight: 600;
-`;
+`
 
 const Description = styled.p`
   font-size: 1.1rem;

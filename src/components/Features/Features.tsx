@@ -4,6 +4,8 @@ import { TeamOutlined, GlobalOutlined, BookOutlined, ApiOutlined } from '@ant-de
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { theme } from '../../types/theme';
+import { useLanguage } from '../../context/LanguageContext';
+import { featuresContent, Feature } from './content';
 
 const FeatureSection = styled.section`
   padding: 100px 0;
@@ -137,29 +139,6 @@ const FeatureDescription = styled.p`
   margin: 0;
 `;
 
-const features = [
-  {
-    icon: <TeamOutlined />,
-    title: 'Expert AI Team',
-    description: 'Our team combines deep AI expertise with extensive industry experience to deliver cutting-edge solutions.',
-  },
-  {
-    icon: <GlobalOutlined />,
-    title: 'Global Reach',
-    description: 'We provide AI solutions that meet international standards while understanding local market needs.',
-  },
-  {
-    icon: <BookOutlined />,
-    title: 'Comprehensive Training',
-    description: 'Structured learning paths from fundamentals to advanced AI concepts, tailored to your pace.',
-  },
-  {
-    icon: <ApiOutlined />,
-    title: 'Strategic Partnerships',
-    description: 'Strong collaborations with leading institutions, enterprises, and research organizations worldwide.',
-  },
-];
-
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -182,12 +161,15 @@ const itemVariants = {
 };
 
 const Features: React.FC = () => {
+  const { language } = useLanguage();
+  const content = featuresContent[language];
+
   return (
     <FeatureSection id="features">
       <Container>
-        <SectionTitle>Why Choose Us</SectionTitle>
+        <SectionTitle>{content.sectionTitle}</SectionTitle>
         <SectionSubtitle>
-          Discover how our AI expertise and innovative solutions can transform your business
+          {content.sectionSubtitle}
         </SectionSubtitle>
         <motion.div
           variants={containerVariants}
@@ -196,11 +178,11 @@ const Features: React.FC = () => {
           viewport={{ once: true, margin: "-100px" }}
         >
           <FeatureRow gutter={[32, 32]}>
-            {features.map((feature, index) => (
+            {content.features.map((feature, index) => (
               <Col xs={24} md={12} key={index}>
                 <FeatureItem variants={itemVariants}>
                   <IconWrapper>
-                    {feature.icon}
+                    <feature.icon />
                   </IconWrapper>
                   <ContentWrapper>
                     <FeatureTitle>{feature.title}</FeatureTitle>

@@ -9,6 +9,7 @@ import Product from './components/Product/Product';
 import Contact from './components/Contact/Contact';
 import Hero from './components/Hero/Hero';
 import Footer from './components/Footer/Footer';
+import { LanguageProvider } from './context/LanguageContext';
 
 const { Content } = Layout;
 
@@ -22,18 +23,20 @@ const StyledContent = styled(Content)`
 
 const App: React.FC = () => {
   return (
-    <StyledLayout>
-      <Navbar />
-      <StyledContent>
-        <Hero />
-        <Features />
-        <About />
-        <Service />
-        <Product />
-        <Contact />
-      </StyledContent>
-      <Footer />
-    </StyledLayout>
+    <LanguageProvider>
+      <StyledLayout>
+        <Navbar />
+
+          <Hero />
+          <Features />
+          <About />
+          <Service />
+          <Product />
+          <Contact />
+
+        <Footer />
+      </StyledLayout>
+    </LanguageProvider>
   );
 };
 

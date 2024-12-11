@@ -4,16 +4,17 @@ import { scroller } from 'react-scroll';
 import { MenuOutlined, CloseOutlined } from '@ant-design/icons';
 import { theme } from '../../types/theme';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLanguage } from '../../context/LanguageContext';
+import { navContent, NavItem } from './content';
 
 const NavContainer = styled.nav<{ scrolled: boolean }>`
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  height: ${props => props.scrolled ? '70px' : '80px'};
-  background: ${props => props.scrolled ? 'rgba(255, 255, 255, 0.95)' : 'white'};
+  height: ${props => props.scrolled ? '60px' : '70px'};
   backdrop-filter: ${props => props.scrolled ? 'blur(10px)' : 'none'};
-  box-shadow: ${props => props.scrolled ? '0 2px 20px rgba(0, 0, 0, 0.1)' : '0 2px 8px rgba(0, 0, 0, 0.06)'};
+  box-shadow: ${props => props.scrolled ? '0 2px 20px rgba(0, 0, 0, 0.1)' : 'none'};
   padding: 0 50px;
   display: flex;
   align-items: center;
@@ -22,49 +23,46 @@ const NavContainer = styled.nav<{ scrolled: boolean }>`
 
   @media (max-width: 768px) {
     padding: 0 20px;
-    justify-content: space-between;
+    height: 60px;
   }
 `;
 
 const NavContent = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between;
   flex: 1;
-  margin-right: 32px;
+  gap: 50px;
 
   @media (max-width: 768px) {
-    margin-right: 0;
+    justify-content: flex-start;
+    gap: 0;
   }
 `;
 
-const Logo = styled(motion.div)`
-  font-size: 24px;
-  font-weight: bold;
-  color: ${theme.colors.primary};
-  cursor: pointer;
+const Logo = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
+  cursor: pointer;
 
-  &::before {
-    content: '';
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    background: ${theme.colors.secondary};
-    border-radius: 50%;
+  img {
+    height: 32px;
+    transition: height 0.3s ease;
+  }
+
+  @media (max-width: 768px) {
+    img {
+      height: 28px;
+    }
   }
 `;
 
 const NavLinks = styled(motion.div)<{ isOpen: boolean }>`
   display: flex;
   gap: 32px;
-  margin-left: auto;
 
   @media (max-width: 768px) {
     position: fixed;
-    top: ${props => props.isOpen ? '70px' : '-100vh'};
+    top: ${props => props.isOpen ? '60px' : '-100vh'};
     left: 0;
     right: 0;
     background: rgba(255, 255, 255, 0.98);
@@ -75,14 +73,13 @@ const NavLinks = styled(motion.div)<{ isOpen: boolean }>`
     transition: top 0.3s ease;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     height: auto;
-    max-height: calc(100vh - 70px);
+    max-height: calc(100vh - 60px);
     overflow-y: auto;
-    margin-left: 0;
   }
 `;
 
 const StyledNavItem = styled(motion.div)`
-  color: #333;
+  color: ${props => props.theme.colors.text};
   cursor: pointer;
   font-size: 16px;
   font-weight: 500;
@@ -133,30 +130,64 @@ const StyledNavItem = styled(motion.div)`
   }
 `;
 
-const RightSection = styled.div`
-  display: flex;
+const MobileControls = styled.div`
+  display: none;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
+  margin-left: auto;
 
   @media (max-width: 768px) {
-    gap: 16px;
+    display: flex;
   }
 `;
 
-const FlagToggle = styled.div`
+const DesktopLanguageToggle = styled(motion.div)`
   display: flex;
   align-items: center;
+  gap: 8px;
   cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  margin-left: auto;
   
   img {
     width: 24px;
     height: 24px;
-    border-radius: 50%;
-    transition: all 0.3s ease;
-    
-    &:hover {
-      transform: scale(1.1);
-    }
+    border-radius: 4px;
+  }
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.05);
+  }
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+`;
+
+const LanguageToggle = styled(motion.div)`
+  display: none;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  
+  img {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+  }
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.05);
+  }
+
+  @media (max-width: 768px) {
+    display: flex;
+    padding: 6px;
   }
 `;
 
@@ -165,27 +196,29 @@ const MenuIcon = styled(motion.button)`
   background: none;
   border: none;
   cursor: pointer;
-  padding: 8px;
+  padding: 6px;
   color: #333;
-  font-size: 24px;
+  font-size: 20px;
 
   @media (max-width: 768px) {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 `;
 
-interface NavItemProps {
+interface NavigationItemProps {
   to: string;
   children: React.ReactNode;
   onClick?: () => void;
 }
 
-const NavItem: React.FC<NavItemProps> = ({ to, children, onClick }) => {
+const NavigationItem: React.FC<NavigationItemProps> = ({ to, children, onClick }) => {
   const handleClick = () => {
     scroller.scrollTo(to, {
       duration: 800,
-      smooth: true,
-      offset: -70
+      delay: 0,
+      smooth: 'easeInOutQuart',
     });
     if (onClick) onClick();
   };
@@ -201,83 +234,85 @@ const NavItem: React.FC<NavItemProps> = ({ to, children, onClick }) => {
   );
 };
 
-const MENU_ITEMS = [
-  { to: 'features', label: 'Features' },
-  { to: 'about', label: 'About' },
-  { to: 'services', label: 'Services' },
-  { to: 'products', label: 'Products' },
-  { to: 'contact', label: 'Contact' }
+interface MenuItem {
+  to: string;
+  label: NavItem;
+}
+
+const MENU_ITEMS: MenuItem[] = [
+  { to: 'features', label: 'features' },
+  { to: 'about', label: 'about' },
+  { to: 'services', label: 'services' },
+  { to: 'products', label: 'products' },
+  { to: 'contact', label: 'contact' }
 ];
 
 const Navbar: React.FC = () => {
-  const [scrolled, setScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [isEnglish, setIsEnglish] = useState(true);
+  const [scrolled, setScrolled] = useState(false);
+  const { language, setLanguage } = useLanguage();
+  const content = navContent[language];
+
+  const handleLanguageToggle = () => {
+    setLanguage(language === 'en' ? 'zh' : 'en');
+  };
 
   useEffect(() => {
     const handleScroll = () => {
-      const offset = window.scrollY;
-      setScrolled(offset > 50);
+      setScrolled(window.scrollY > 20);
     };
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth > 768) {
-        setIsOpen(false);
-      }
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const toggleMenu = () => setIsOpen(!isOpen);
-  const closeMenu = () => setIsOpen(false);
-
   return (
     <NavContainer scrolled={scrolled}>
       <NavContent>
-        <Logo
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5 }}
-          onClick={() => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            closeMenu();
-          }}
-        >
-          Future AI
+        <Logo onClick={() => window.scrollTo(0, 0)}>
+          <img src="/future-ai-hub-logo.png" alt="Logo" />
         </Logo>
-
-        <NavLinks
-          isOpen={isOpen}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
+        <NavLinks isOpen={isOpen}>
           {MENU_ITEMS.map((item) => (
-            <NavItem key={item.to} to={item.to} onClick={() => setIsOpen(false)}>
-              {item.label}
-            </NavItem>
+            <NavigationItem
+              key={item.to}
+              to={item.to}
+              onClick={() => setIsOpen(false)}
+            >
+              {content[item.label]}
+            </NavigationItem>
           ))}
         </NavLinks>
-      </NavContent>
-
-      <RightSection>
-        <FlagToggle onClick={() => setIsEnglish(!isEnglish)}>
-          <img
-            src={isEnglish ? "/flags/united-kingdom.png" : "/flags/china.png"}
-            alt={isEnglish ? "English" : "Chinese"}
+        <DesktopLanguageToggle
+          onClick={handleLanguageToggle}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <img 
+            src={language === 'en' ? '/flags/en.png' : '/flags/zh.png'} 
+            alt={language === 'en' ? 'English' : '中文'}
           />
-        </FlagToggle>
-        <MenuIcon onClick={() => setIsOpen(!isOpen)}>
-          {isOpen ? <CloseOutlined /> : <MenuOutlined />}
-        </MenuIcon>
-      </RightSection>
+        </DesktopLanguageToggle>
+        <MobileControls>
+          <LanguageToggle
+            onClick={handleLanguageToggle}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <img 
+              src={language === 'en' ? '/flags/en.png' : '/flags/zh.png'} 
+              alt={language === 'en' ? 'English' : '中文'}
+            />
+          </LanguageToggle>
+          <MenuIcon
+            onClick={() => setIsOpen(!isOpen)}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+          >
+            {isOpen ? <CloseOutlined /> : <MenuOutlined />}
+          </MenuIcon>
+        </MobileControls>
+      </NavContent>
     </NavContainer>
   );
 };

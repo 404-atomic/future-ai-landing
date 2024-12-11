@@ -1,6 +1,8 @@
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
 import { theme } from '../../types/theme';
+import { useLanguage } from '../../context/LanguageContext';
+import { heroContent } from './content';
 
 // Animations
 const animations = {
@@ -60,7 +62,7 @@ const animations = {
 
 // Styled Components
 const HeroSection = styled.section`
-  min-height: 90vh;
+  min-height: 95vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -260,6 +262,9 @@ const WAVE_CONFIG = [
 
 // Hero Component
 const Hero: React.FC = () => {
+  const { language } = useLanguage();
+  const content = heroContent[language];
+
   return (
     <HeroSection>
       {WAVE_CONFIG.map((config, index) => (
@@ -267,14 +272,14 @@ const Hero: React.FC = () => {
       ))}
       <ContentWrapper>
         <Title>
-          Empowering Digital{' '}
-          <HighlightText>Singapore</HighlightText>
-          {' '}Fostering Growth for All
+          {content.title.part1}{' '}
+          <HighlightText>{content.title.highlight}</HighlightText>
+          {' '}{content.title.part2}
         </Title>
         <SubtitleContainer>
           <SubtitleWrapper>
             <Subtitle>
-              FutureAI Hub - An innovative startup focused on AI applications and enterprise intelligence services.
+              {content.subtitle}
             </Subtitle>
           </SubtitleWrapper>
         </SubtitleContainer>

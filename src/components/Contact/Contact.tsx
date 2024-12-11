@@ -1,139 +1,82 @@
 import React from 'react';
 import { Form, Input, Button, message } from 'antd';
-import {
-  MailOutlined,
-  PhoneOutlined,
-  EnvironmentOutlined,
-  GlobalOutlined,
-  CustomerServiceOutlined,
-  NotificationOutlined,
-  TeamOutlined,
-  SendOutlined
-} from '@ant-design/icons';
+import { SendOutlined, MessageOutlined, WhatsAppOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { theme } from '../../types/theme';
+import { useLanguage } from '../../context/LanguageContext';
+import { contactContent } from './content';
 
 const { TextArea } = Input;
 
 const ContactSection = styled.section`
-  padding: 80px 20px;
-  background: linear-gradient(135deg, #fff6f0 0%, #fff 100%);
+  padding: 100px 20px;
+  background: linear-gradient(135deg, #fff 0%, #fff6f0 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
 `;
 
 const Container = styled.div`
-  width: 80vw;
+  max-width: 1200px;
+  width: 100%;
   margin: 0 auto;
-`;
-
-const SectionTitle = styled.h2`
-  text-align: center;
-  color: ${theme.colors.primary};
-  font-size: 2.8rem;
-  margin-bottom: 60px;
-  font-weight: bold;
-  position: relative;
-  display: inline-block;
-  left: 50%;
-  transform: translateX(-50%);
-
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: -12px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 3px;
-    background: ${theme.colors.primary};
-  }
-`;
-
-const ContactGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1fr 1fr;
   gap: 60px;
-  
-  @media (max-width: 768px) {
+  align-items: center;
+
+  @media (max-width: 968px) {
     grid-template-columns: 1fr;
     gap: 40px;
   }
 `;
 
-const ContactBlock = styled(motion.div)`
-  background: #fff;
-  padding: 40px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+const InfoSection = styled.div`
+  h2 {
+    font-size: 2.5rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: ${theme.colors.text};
+  }
 
-  h3 {
-    color: ${theme.colors.primary};
-    font-size: 1.5rem;
+  p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: ${theme.colors.text};
+    opacity: 0.8;
     margin-bottom: 30px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
   }
 `;
 
-const ContactItem = styled.div`
-  display: flex;
-  align-items: center;
-  margin-bottom: 24px;
-  
-  &:last-child {
-    margin-bottom: 0;
-  }
-  
-  .anticon {
-    font-size: 1.25rem;
+const IconContainer = styled.div`
+  margin-bottom: 40px;
+  svg {
+    font-size: 48px;
     color: ${theme.colors.primary};
-    margin-right: 16px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
   }
-  
-  .content {
-    h4 {
-      color: #333;
-      font-size: 1.1rem;
-      margin-bottom: 4px;
-      line-height: 1.2;
-    }
-    
-    p {
-      color: #666;
-      font-size: 1rem;
-      margin: 0;
-      line-height: 1.5;
-    }
+`;
 
-    a {
-      color: ${theme.colors.primary};
-      text-decoration: none;
-      
-      &:hover {
-        color: ${theme.colors.secondary};
-      }
-    }
-  }
+const FormSection = styled(motion.div)`
+  background: #fff;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
 `;
 
 const StyledForm = styled(Form)`
   .ant-form-item-label > label {
-    color: #333;
+    color: ${theme.colors.text};
     font-size: 1rem;
+    opacity: 0.8;
   }
 
   .ant-input,
   .ant-input-textarea {
-    border-radius: 6px;
-    border-color: #ddd;
-    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 12px 16px;
+    font-size: 1rem;
     
     &:hover,
     &:focus {
@@ -147,156 +90,131 @@ const StyledForm = styled(Form)`
   }
 
   .submit-btn {
-    background: linear-gradient(135deg, ${theme.colors.primary} 0%, ${theme.colors.secondary} 100%);
+    background: ${theme.colors.primary};
     border: none;
     height: 48px;
     width: 100%;
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 500;
     border-radius: 8px;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 
     &:hover {
+      background: ${theme.colors.secondary};
       transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
     }
 
+    .anticon {
+      font-size: 1.2rem;
+    }
+  }
+`;
 
+const WhatsAppButton = styled.a`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  color: ${theme.colors.primary};
+  padding: 12px 24px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border: 2px solid ${theme.colors.primary};
+
+  &:hover {
+    transform: translateY(-2px);
+    background: ${theme.colors.primary};
+    color: white;
+  }
+
+  .anticon {
+    font-size: 1.2rem;
   }
 `;
 
 export const Contact: React.FC = () => {
   const [form] = Form.useForm();
+  const { language } = useLanguage();
+  const content = contactContent[language];
 
   const handleSubmit = (values: any) => {
     console.log('Form values:', values);
-    message.success('Thank you for your message. We will get back to you soon!');
+    message.success(content.form.success);
     form.resetFields();
   };
 
   return (
     <ContactSection id="contact">
       <Container>
-        <SectionTitle>Contact Us</SectionTitle>
-        <ContactGrid>
-          <ContactBlock
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+        <InfoSection>
+          <IconContainer>
+            <MessageOutlined />
+          </IconContainer>
+          <h2>{content.title}</h2>
+          <p>{content.description}</p>
+          <WhatsAppButton 
+            href="https://wa.me/6512345678" 
+            target="_blank" 
+            rel="noopener noreferrer"
           >
-            <h3>Contact Information</h3>
-            <ContactItem>
-              <MailOutlined />
-              <div className="content">
-                <h4>Business Inquiries</h4>
-                <p><a href="mailto:business@futureaihub.sg">business@futureaihub.sg</a></p>
-              </div>
-            </ContactItem>
-            <ContactItem>
-              <PhoneOutlined />
-              <div className="content">
-                <h4>Phone</h4>
-                <p><a href="tel:+6512345678">+65 1234 5678</a></p>
-              </div>
-            </ContactItem>
-            <ContactItem>
-              <EnvironmentOutlined />
-              <div className="content">
-                <h4>Address</h4>
-                <p>Singapore Central Business District</p>
-              </div>
-            </ContactItem>
-            <ContactItem>
-              <GlobalOutlined />
-              <div className="content">
-                <h4>Company Website</h4>
-                <p><a href="https://futureaihub.sg" target="_blank" rel="noopener noreferrer">futureaihub.sg</a></p>
-              </div>
-            </ContactItem>
-            <ContactItem>
-              <CustomerServiceOutlined />
-              <div className="content">
-                <h4>User Support</h4>
-                <p><a href="mailto:support@careermateai.xyz">support@careermateai.xyz</a></p>
-              </div>
-            </ContactItem>
-            <ContactItem>
-              <NotificationOutlined />
-              <div className="content">
-                <h4>Media Inquiries</h4>
-                <p><a href="mailto:media@futureaihub.sg">media@futureaihub.sg</a></p>
-              </div>
-            </ContactItem>
-            <ContactItem>
-              <TeamOutlined />
-              <div className="content">
-                <h4>Join Us</h4>
-                <p><a href="mailto:careers@futureaihub.sg">careers@futureaihub.sg</a></p>
-              </div>
-            </ContactItem>
-          </ContactBlock>
+            <WhatsAppOutlined />
+            {content.whatsappButton}
+          </WhatsAppButton>
+        </InfoSection>
 
-          <ContactBlock
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+        <FormSection
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          <StyledForm
+            form={form}
+            layout="vertical"
+            onFinish={handleSubmit}
           >
-            <h3>Send Us a Message</h3>
-            <StyledForm
-              form={form}
-              layout="vertical"
-              onFinish={handleSubmit}
+            <Form.Item
+              name="name"
+              label={content.form.name.label}
+              rules={[{ required: true, message: content.form.name.error }]}
             >
-              <Form.Item
-                name="name"
-                label="Name"
-                rules={[{ required: true, message: 'Please enter your name' }]}
-              >
-                <Input placeholder="Your name" />
-              </Form.Item>
+              <Input placeholder={content.form.name.placeholder} />
+            </Form.Item>
 
-              <Form.Item
-                name="email"
-                label="Email"
-                rules={[
-                  { required: true, message: 'Please enter your email' },
-                  { type: 'email', message: 'Please enter a valid email' }
-                ]}
-              >
-                <Input placeholder="Your email" />
-              </Form.Item>
+            <Form.Item
+              name="email"
+              label={content.form.email.label}
+              rules={[
+                { required: true, message: content.form.email.error },
+                { type: 'email', message: content.form.email.invalidError }
+              ]}
+            >
+              <Input placeholder={content.form.email.placeholder} />
+            </Form.Item>
 
-              <Form.Item
-                name="subject"
-                label="Subject"
-                rules={[{ required: true, message: 'Please enter a subject' }]}
-              >
-                <Input placeholder="Message subject" />
-              </Form.Item>
+            <Form.Item
+              name="message"
+              label={content.form.message.label}
+              rules={[{ required: true, message: content.form.message.error }]}
+            >
+              <TextArea rows={4} placeholder={content.form.message.placeholder} />
+            </Form.Item>
 
-              <Form.Item
-                name="message"
-                label="Message"
-                rules={[{ required: true, message: 'Please enter your message' }]}
-              >
-                <TextArea
-                  placeholder="Your message"
-                  rows={4}
-                />
-              </Form.Item>
-
-              <Form.Item>
-                <Button type="primary" htmlType="submit" className="submit-btn">
-                  <SendOutlined style={{ marginRight: 8 }} />
-                  Send Message
-                </Button>
-              </Form.Item>
-            </StyledForm>
-          </ContactBlock>
-        </ContactGrid>
+            <Form.Item>
+              <Button type="primary" htmlType="submit" className="submit-btn">
+                {content.form.submit}
+                <SendOutlined />
+              </Button>
+            </Form.Item>
+          </StyledForm>
+        </FormSection>
       </Container>
     </ContactSection>
   );

@@ -2,181 +2,145 @@ import React from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { theme } from '../../types/theme';
+import { useLanguage } from '../../context/LanguageContext';
+import { productContent } from './content';
+import { DashboardOutlined, AppstoreOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
 
 const ProductSection = styled.section`
   padding: 100px 0;
-  background: #fafafa;
+  background: #FFFFFF;
 `;
 
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
-`;
-
-const SectionTitle = styled.h2`
   text-align: center;
-  color: ${theme.colors.primary};
+`;
+
+const Subtitle = styled.h3`
+  font-size: 1.2rem;
+  color: ${theme.colors.text};
+  opacity: 0.7;
+  margin-bottom: 16px;
+  font-weight: normal;
+`;
+
+const Title = styled.h2`
   font-size: 2.8rem;
-  margin-bottom: 60px;
-  font-weight: bold;
-  position: relative;
-  display: inline-block;
-  left: 50%;
-  transform: translateX(-50%);
-
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: -12px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 3px;
-    background: ${theme.colors.primary};
-  }
-`;
-
-const ProductContent = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 80px;
-  align-items: center;
-
-  @media (max-width: 992px) {
-    grid-template-columns: 1fr;
-    gap: 40px;
-  }
-`;
-
-const TextContent = styled(motion.div)`
-  @media (max-width: 992px) {
-    order: 2;
-  }
-`;
-
-const ProductTitle = styled.h3`
   color: ${theme.colors.primary};
-  font-size: 2rem;
   margin-bottom: 24px;
   font-weight: 600;
 `;
 
-const ProductDescription = styled.p`
-  color: #333;
+const Description = styled.p`
   font-size: 1.1rem;
-  line-height: 1.8;
-  margin-bottom: 32px;
+  color: ${theme.colors.text};
+  opacity: 0.8;
+  line-height: 1.6;
+  max-width: 800px;
+  margin: 0 auto 80px;
 `;
 
-const FeatureList = styled.ul`
-  list-style: none;
-  padding: 0;
-  margin-bottom: 32px;
+const ExtendedDescription = styled(Description)`
+  margin: 80px auto;
+  font-style: italic;
+  padding: 32px;
 `;
 
-const FeatureItem = styled.li`
-  color: #333;
-  font-size: 1.1rem;
-  line-height: 1.8;
+const FeaturesGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+  max-width: 1000px;
+  margin: 0 auto;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 60px;
+  }
+`;
+
+const FeatureCard = styled(motion.div)`
+  text-align: center;
+`;
+
+const IconWrapper = styled.div`
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .anticon {
+    font-size: 48px;
+    color: ${theme.colors.primary};
+  }
+`;
+
+const FeatureTitle = styled.h4`
+  font-size: 1.5rem;
+  color: ${theme.colors.text};
   margin-bottom: 16px;
-  padding-left: 28px;
-  position: relative;
-
-  &:before {
-    content: "—";
-    color: ${theme.colors.primary};
-    position: absolute;
-    left: 0;
-  }
-
-  strong {
-    color: ${theme.colors.primary};
-    font-weight: 600;
-  }
+  font-weight: 600;
 `;
 
-const ImageWrapper = styled(motion.div)`
-  position: relative;
-  padding-bottom: 75%;
-  background: #f0f0f0;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
-
-  img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  @media (max-width: 992px) {
-    order: 1;
-    max-width: 600px;
-    margin: 0 auto;
-    width: 100%;
-  }
+const FeatureDescription = styled.p`
+  font-size: 1.1rem;
+  color: ${theme.colors.text};
+  opacity: 0.8;
+  line-height: 1.6;
+  max-width: 300px;
+  margin: 0 auto;
 `;
 
 const Product: React.FC = () => {
+  const { language } = useLanguage();
+  const content = productContent[language];
+
+  const features = [
+    {
+      icon: <DashboardOutlined />,
+      title: content.product.features[0].title,
+      description: content.product.features[0].description
+    },
+    {
+      icon: <AppstoreOutlined />,
+      title: content.product.features[1].title,
+      description: content.product.features[1].description
+    },
+    {
+      icon: <SafetyCertificateOutlined />,
+      title: content.product.features[2].title,
+      description: content.product.features[2].description
+    }
+  ];
+
   return (
     <ProductSection id="products">
       <Container>
-        <SectionTitle>Core Product</SectionTitle>
-        <ProductContent>
-          <TextContent
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <ProductTitle>CareerMateAI</ProductTitle>
-            <ProductDescription>
-              CareerMateAI is the first AI agent product launched by FutureAI Hub, an
-              innovative AI-driven career development companion that provides 24/7 career
-              development support for Singaporean professionals.
-            </ProductDescription>
-            <FeatureList>
-              <FeatureItem>
-                <strong>Continuous Companionship:</strong> Not just an advisor, but a growth partner
-              </FeatureItem>
-              <FeatureItem>
-                <strong>Personalized Teaching:</strong> Providing customized advice based on individual characteristics
-              </FeatureItem>
-              <FeatureItem>
-                <strong>Timely Feedback:</strong> Answering questions and providing direction at any time
-              </FeatureItem>
-              <FeatureItem>
-                <strong>Professional and Reliable:</strong> Professional analysis based on massive data and deep learning
-              </FeatureItem>
-            </FeatureList>
-            <ProductDescription>
-              CareerMateAI can provide personalized career planning advice, skill
-              improvement paths, and industry insights based on the user's career
-              background, skill level, and career goals. Whether it's job search preparation,
-              workplace promotion, or career transition planning, CareerMateAI can provide
-              professional and timely guidance.
-            </ProductDescription>
-          </TextContent>
-          <ImageWrapper
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <img 
-              src="/product-image.jpg" 
-              alt="CareerMateAI Interface"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.style.display = 'none';
-              }}
-            />
-          </ImageWrapper>
-        </ProductContent>
+        <Subtitle>{content.subtitle}</Subtitle>
+        <Title>{content.title}</Title>
+        <Description>{content.description}</Description>
+        <FeaturesGrid>
+          {features.map((feature, index) => (
+            <FeatureCard
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: index * 0.2 }}
+            >
+              <IconWrapper>
+                {feature.icon}
+              </IconWrapper>
+              <FeatureTitle>{feature.title}</FeatureTitle>
+              <FeatureDescription>{feature.description}</FeatureDescription>
+            </FeatureCard>
+          ))}
+        </FeaturesGrid>
+        <ExtendedDescription>{content.extendedDescription}</ExtendedDescription>
       </Container>
     </ProductSection>
   );

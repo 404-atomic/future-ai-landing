@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { RobotOutlined, CloudServerOutlined, CodeOutlined, BulbOutlined } from '@ant-design/icons';
 import { theme } from '../../types/theme';
+import { useLanguage } from '../../context/LanguageContext';
+import { serviceContent } from './content';
 
 const ServiceSection = styled.section`
   padding: 80px 20px;
@@ -72,40 +74,7 @@ const ServiceCard = styled(motion(Card))`
   }
 `;
 
-const services = [
-  {
-    icon: <RobotOutlined />,
-    title: 'AI Model Development',
-    description: 'Custom AI model development services including machine learning and deep learning solutions tailored to your needs.',
-  },
-  {
-    icon: <CloudServerOutlined />,
-    title: 'Cloud AI Services',
-    description: 'Scalable cloud-based AI services supporting rapid deployment and flexible integration with existing systems.',
-  },
-  {
-    icon: <CodeOutlined />,
-    title: 'AI System Integration',
-    description: 'Seamlessly integrate AI technology with your existing systems to enhance operational efficiency.',
-  },
-  {
-    icon: <BulbOutlined />,
-    title: 'AI Consulting',
-    description: 'Expert AI technology consulting to guide your digital transformation journey with strategic insights.',
-  },
-];
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.2,
-    },
-  },
-};
-
-const itemVariants = {
+const cardVariants = {
   hidden: { y: 20, opacity: 0 },
   visible: {
     y: 0,
@@ -117,31 +86,31 @@ const itemVariants = {
 };
 
 const Service: React.FC = () => {
+  const { language } = useLanguage();
+  const content = serviceContent[language];
+
   return (
     <ServiceSection id="services">
       <Container>
-        <SectionTitle>Our Services</SectionTitle>
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-        >
-          <Row gutter={[32, 32]}>
-            {services.map((service, index) => (
-              <Col xs={24} sm={12} lg={6} key={index}>
-                <ServiceCard
-                  variants={itemVariants}
-                  bordered={false}
-                >
-                  {service.icon}
-                  <h3>{service.title}</h3>
-                  <p>{service.description}</p>
-                </ServiceCard>
-              </Col>
-            ))}
-          </Row>
-        </motion.div>
+        <SectionTitle>{content.title}</SectionTitle>
+        <Row gutter={[32, 32]}>
+          {content.services.map((service, index) => (
+            <Col xs={24} sm={12} lg={6} key={index}>
+              <ServiceCard
+                bordered={false}
+                variants={cardVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+              >
+                {React.createElement(service.icon)}
+                <h3>{service.title}</h3>
+                <p>{service.description}</p>
+              </ServiceCard>
+            </Col>
+          ))}
+        </Row>
       </Container>
     </ServiceSection>
   );

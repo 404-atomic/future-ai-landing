@@ -9,6 +9,8 @@ import Product from './components/Product/Product';
 import Contact from './components/Contact/Contact';
 import Hero from './components/Hero/Hero';
 import Footer from './components/Footer/Footer';
+import VisionMission from './components/VisionMission/VisionMission';
+import Advantages from './components/Advantages/Advantages';
 import { LanguageProvider } from './context/LanguageContext';
 
 const { Content } = Layout;
@@ -26,14 +28,16 @@ const App: React.FC = () => {
     <LanguageProvider>
       <StyledLayout>
         <Navbar />
-
+        <StyledContent>
           <Hero />
           <Features />
           <About />
+          <VisionMission />
+          <Advantages />
           <Service />
           <Product />
           <Contact />
-
+        </StyledContent>
         <Footer />
       </StyledLayout>
     </LanguageProvider>

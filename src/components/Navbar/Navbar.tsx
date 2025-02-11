@@ -242,9 +242,10 @@ interface MenuItem {
 const MENU_ITEMS: MenuItem[] = [
   { to: 'features', label: 'features' },
   { to: 'about', label: 'about' },
+  { to: 'vision-mission', label: 'vision' },
+  { to: 'advantages', label: 'advantages' },
   { to: 'services', label: 'services' },
-  { to: 'products', label: 'products' },
-  { to: 'contact', label: 'contact' }
+  { to: 'contact', label: 'contact' },
 ];
 
 const Navbar: React.FC = () => {

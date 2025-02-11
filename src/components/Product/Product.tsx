@@ -5,17 +5,39 @@ import { theme } from '../../types/theme';
 import { useLanguage } from '../../context/LanguageContext';
 import { productContent } from './content';
 import { DashboardOutlined, AppstoreOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
+import { SectionTitle } from '../shared/StyledComponents';
 
 const ProductSection = styled.section`
-  padding: 100px 0;
-  background: #FFFFFF;
+  padding-top: 100px;
+  background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+  position: relative;
+  overflow: hidden;
+`;
+
+const BackgroundImage = styled(motion.div)`
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 80%;
+  height: 80%;
+  opacity: 0.1;
+  z-index: 1;
+  pointer-events: none;
+
+  img {
+    width: 100%;
+    height: 80%;
+    object-fit: cover;
+    filter: grayscale(100%) blur(1px);
+  }
 `;
 
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
-  text-align: center;
+  position: relative;
+  z-index: 2;
 `;
 
 const Subtitle = styled.h3`
@@ -24,6 +46,8 @@ const Subtitle = styled.h3`
   opacity: 0.7;
   margin-bottom: 16px;
   font-weight: normal;
+  justify-content: center;
+  text-align: center;
 `;
 
 const Title = styled.h2`
@@ -31,6 +55,8 @@ const Title = styled.h2`
   color: ${theme.colors.primary};
   margin-bottom: 24px;
   font-weight: 600;
+  justify-content: center;
+  text-align: center;
 `;
 
 const Description = styled.p`
@@ -40,10 +66,12 @@ const Description = styled.p`
   line-height: 1.6;
   max-width: 800px;
   margin: 0 auto 80px;
+  justify-content: center;
+  text-align: center;
 `;
 
 const ExtendedDescription = styled(Description)`
-  margin: 80px auto;
+  margin: 40px auto;
   font-style: italic;
   padding: 32px;
 `;
@@ -118,10 +146,25 @@ const Product: React.FC = () => {
   ];
 
   return (
-    <ProductSection id="products">
+    <ProductSection id="product">
+      <BackgroundImage
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 0.04 }}
+        viewport={{ once: true }}
+        transition={{ duration: 1 }}
+      >
+        <img 
+          src="/connecting.jpg" 
+          alt=""
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            target.style.display = 'none';
+          }}
+        />
+      </BackgroundImage>
       <Container>
         <Subtitle>{content.subtitle}</Subtitle>
-        <Title>{content.title}</Title>
+        <SectionTitle>{content.title}</SectionTitle>
         <Description>{content.description}</Description>
         <FeaturesGrid>
           {features.map((feature, index) => (

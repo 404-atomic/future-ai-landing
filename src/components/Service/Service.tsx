@@ -6,6 +6,7 @@ import { RobotOutlined, CloudServerOutlined, CodeOutlined, BulbOutlined } from '
 import { theme } from '../../types/theme';
 import { useLanguage } from '../../context/LanguageContext';
 import { serviceContent } from './content';
+import { SectionTitle } from '../shared/StyledComponents';
 
 const ServiceSection = styled.section`
   padding: 80px 20px;
@@ -16,29 +17,6 @@ const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
-`;
-
-const SectionTitle = styled.h2`
-  text-align: center;
-  color: ${theme.colors.primary};
-  font-size: 2.8rem;
-  margin-bottom: 60px;
-  font-weight: bold;
-  position: relative;
-  display: inline-block;
-  left: 50%;
-  transform: translateX(-50%);
-
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: -12px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 3px;
-    background: ${theme.colors.primary};
-  }
 `;
 
 const ServiceCard = styled(motion(Card))`

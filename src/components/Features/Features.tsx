@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { theme } from '../../types/theme';
 import { useLanguage } from '../../context/LanguageContext';
 import { featuresContent, Feature } from './content';
+import { SectionTitle } from '../shared/StyledComponents';
 
 const FeatureSection = styled.section`
   padding: 100px 0;
@@ -32,29 +33,6 @@ const Container = styled.div`
   padding: 0 20px;
   position: relative;
   z-index: 2;
-`;
-
-const SectionTitle = styled.h2`
-  text-align: center;
-  color: ${theme.colors.primary};
-  font-size: 2.8rem;
-  margin-bottom: 60px;
-  font-weight: bold;
-  position: relative;
-  display: inline-block;
-  left: 50%;
-  transform: translateX(-50%);
-
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: -12px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 3px;
-    background: ${theme.colors.primary};
-  }
 `;
 
 const SectionSubtitle = styled.p`
@@ -167,7 +145,7 @@ const Features: React.FC = () => {
   return (
     <FeatureSection id="features">
       <Container>
-        <SectionTitle>{content.sectionTitle}</SectionTitle>
+        <SectionTitle>Features</SectionTitle>
         <SectionSubtitle>
           {content.sectionSubtitle}
         </SectionSubtitle>

@@ -1,8 +1,11 @@
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
+import { motion } from 'framer-motion';
+import { scroller } from 'react-scroll';
 import { theme } from '../../types/theme';
 import { useLanguage } from '../../context/LanguageContext';
 import { heroContent } from './content';
+import { RightOutlined } from '@ant-design/icons';
 
 // Animations
 const animations = {
@@ -152,7 +155,7 @@ const ContentWrapper = styled.div`
   align-items: center;
   justify-content: center;
   width: 100%;
-  max-width: 1200px;
+  max-width: 1700px;
   margin: 0 auto;
   padding: 0 20px;
 
@@ -168,7 +171,7 @@ const ContentWrapper = styled.div`
 `;
 
 const Title = styled.h1`
-  font-size: 3.5rem;
+  font-size: 5.5rem;
   font-weight: 700;
   margin-bottom: 1.5rem;
   line-height: 1.2;
@@ -189,7 +192,7 @@ const Title = styled.h1`
   }
 
   @media (max-width: 480px) {
-    font-size: 2.4rem;
+    font-size: 1.8rem;
     max-width: 100%;
   }
 `;
@@ -234,9 +237,10 @@ const SubtitleWrapper = styled.div`
 `;
 
 const Subtitle = styled.div`
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   font-weight: 500;
   text-align: center;
+  letter-spacing: 0.05em;
   
   @media (max-width: 768px) {
     font-size: 1.6rem;
@@ -244,12 +248,51 @@ const Subtitle = styled.div`
     margin: 0;
     font-weight: 400;
     line-height: 1.4;
-    letter-spacing: -0.02em;
+    letter-spacing: 0.1em;
   }
 
   @media (max-width: 480px) {
-    font-size: 1.4rem;
+    font-size: 0.8rem;
     max-width: 100%;
+  }
+`;
+
+const GetStartedButton = styled(motion.button)`
+  margin-top: 40px;
+  padding: 16px 32px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: white;
+  background: linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.secondary});
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px ${theme.colors.primary}40;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .anticon {
+    font-size: 0.9em;
+    transition: transform 0.3s ease;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px ${theme.colors.primary}60;
+
+    .anticon {
+      transform: translateX(4px);
+    }
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  @media (max-width: 768px) {
+    font-size: 0.8rem;
   }
 `;
 
@@ -264,6 +307,14 @@ const WAVE_CONFIG = [
 const Hero: React.FC = () => {
   const { language } = useLanguage();
   const content = heroContent[language];
+
+  const handleGetStarted = () => {
+    scroller.scrollTo('contact', {
+      duration: 800,
+      delay: 0,
+      smooth: 'easeInOutQuart'
+    });
+  };
 
   return (
     <HeroSection>
@@ -283,6 +334,20 @@ const Hero: React.FC = () => {
             </Subtitle>
           </SubtitleWrapper>
         </SubtitleContainer>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.8 }}
+        >
+          <GetStartedButton
+            onClick={handleGetStarted}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            {content.getStarted}
+            <RightOutlined />
+          </GetStartedButton>
+        </motion.div>
       </ContentWrapper>
     </HeroSection>
   );

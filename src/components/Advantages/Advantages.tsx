@@ -202,10 +202,10 @@ const Advantages: React.FC = () => {
     carouselRef.current?.next();
   };
 
-  // Create slides with 3 advantages per slide
+  // Create slides with 4 advantages per slide
   const slides = [];
-  for (let i = 0; i < content.advantages.length; i += 3) {
-    slides.push(content.advantages.slice(i, i + 3));
+  for (let i = 0; i < content.advantages.length; i += 4) {
+    slides.push(content.advantages.slice(i, i + 4));
   }
 
   return (
@@ -237,10 +237,10 @@ const Advantages: React.FC = () => {
               pauseOnHover
             >
               {slides.map((slide, slideIndex) => (
-                <div key={slideIndex} style={{ height: '100%' }}>
-                  <Row gutter={[24, 24]} style={{ height: '100%' }}>
+                <div key={slideIndex}>
+                  <Row gutter={[24, 24]}>
                     {slide.map((advantage, index) => (
-                      <Col xs={24} md={8} key={index} style={{ height: '100%' }}>
+                      <Col xs={24} sm={12} md={6} key={index}>
                         <AdvantageCard
                           initial={{ opacity: 0, y: 20 }}
                           whileInView={{ opacity: 1, y: 0 }}

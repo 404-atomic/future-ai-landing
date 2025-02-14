@@ -46,6 +46,7 @@ const StyledCollapse = styled(Collapse)`
   overflow: hidden;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border: none !important;
+  height: 500px !important;
 
   .ant-collapse-item {
     border-bottom: none !important;
@@ -82,6 +83,10 @@ const StyledCollapse = styled(Collapse)`
 
   .ant-collapse-item-active .ant-collapse-arrow {
     transform: rotate(0deg) !important;
+  }
+
+  @media (max-width: 768px) {
+    height: auto !important;
   }
 `;
 
@@ -164,7 +169,7 @@ const Service: React.FC = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
-                <StyledCollapse>
+                <StyledCollapse collapsible="disabled" defaultActiveKey={[index]}>
                   <Panel
                     header={
                       <ServiceHeader>

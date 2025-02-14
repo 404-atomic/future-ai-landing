@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form, Input, Button, message } from 'antd';
-import { SendOutlined, MessageOutlined, WhatsAppOutlined } from '@ant-design/icons';
+import { SendOutlined, MessageOutlined, MailOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { theme } from '../../types/theme';
@@ -10,19 +10,17 @@ import { contactContent } from './content';
 const { TextArea } = Input;
 
 const ContactSection = styled.section`
-  padding: 100px 20px;
-  background: linear-gradient(135deg, #fff 0%, #fff6f0 100%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  padding: 100px 0;
+  background: linear-gradient(135deg, #fff6f0 0%, #fff 100%);
+  position: relative;
 `;
 
 const Container = styled.div`
   max-width: 1200px;
-  width: 100%;
   margin: 0 auto;
+  padding: 0 20px;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1.5fr;
   gap: 60px;
   align-items: center;
 
@@ -33,109 +31,134 @@ const Container = styled.div`
 `;
 
 const InfoSection = styled.div`
+  text-align: left;
+  padding: 40px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease;
+
   h2 {
     font-size: 2.5rem;
-    font-weight: 600;
-    margin-bottom: 20px;
-    color: ${theme.colors.text};
+    margin: 20px 0;
+    background: linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.secondary});
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
   p {
     font-size: 1.1rem;
-    line-height: 1.6;
     color: ${theme.colors.text};
-    opacity: 0.8;
     margin-bottom: 30px;
+    line-height: 1.6;
   }
 `;
 
 const IconContainer = styled.div`
-  margin-bottom: 40px;
-  svg {
-    font-size: 48px;
-    color: ${theme.colors.primary};
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.secondary});
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+
+  .anticon {
+    font-size: 28px;
+    color: white;
   }
 `;
 
 const FormSection = styled(motion.div)`
-  background: #fff;
+  background: white;
   padding: 40px;
-  border-radius: 16px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
-`;
-
-const StyledForm = styled(Form)`
-  .ant-form-item-label > label {
-    color: ${theme.colors.text};
-    font-size: 1rem;
-    opacity: 0.8;
-  }
-
-  .ant-input,
-  .ant-input-textarea {
-    border-radius: 8px;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    padding: 12px 16px;
-    font-size: 1rem;
-    
-    &:hover,
-    &:focus {
-      border-color: ${theme.colors.primary};
-      box-shadow: none;
-    }
-  }
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 
   .ant-form-item {
     margin-bottom: 24px;
   }
 
-  .submit-btn {
-    background: ${theme.colors.primary};
-    border: none;
-    height: 48px;
+  .ant-input {
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: 2px solid #eef1f6;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+
+    &:hover, &:focus {
+      border-color: ${theme.colors.primary};
+      box-shadow: 0 0 0 2px ${theme.colors.primary}20;
+    }
+  }
+
+  .ant-input-textarea {
+    .ant-input {
+      min-height: 120px;
+    }
+  }
+
+  .ant-form-item-label {
+    padding-bottom: 8px;
+    
+    label {
+      font-size: 1rem;
+      color: ${theme.colors.text};
+      font-weight: 500;
+    }
+  }
+
+  button {
     width: 100%;
+    height: auto;
+    padding: 12px 24px;
     font-size: 1rem;
     font-weight: 500;
-    border-radius: 8px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.secondary});
+    border: none;
+    box-shadow: 0 4px 15px ${theme.colors.primary}40;
     transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
 
     &:hover {
-      background: ${theme.colors.secondary};
       transform: translateY(-2px);
+      box-shadow: 0 8px 25px ${theme.colors.primary}60;
     }
 
-    .anticon {
-      font-size: 1.2rem;
+    &:active {
+      transform: translateY(0);
     }
   }
 `;
 
-const WhatsAppButton = styled.a`
+const EmailButton = styled.a`
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  background: transparent;
-  color: ${theme.colors.primary};
-  padding: 12px 24px;
-  border-radius: 8px;
+  gap: 12px;
+  background: linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.secondary});
+  color: white;
+  padding: 14px 28px;
+  border-radius: 12px;
   text-decoration: none;
-  font-size: 1rem;
   font-weight: 500;
+  font-size: 1.1rem;
   transition: all 0.3s ease;
-  border: 2px solid ${theme.colors.primary};
+  box-shadow: 0 4px 15px ${theme.colors.primary}40;
 
   &:hover {
     transform: translateY(-2px);
-    background: ${theme.colors.primary};
+    box-shadow: 0 8px 25px ${theme.colors.primary}60;
     color: white;
   }
 
+  &:active {
+    transform: translateY(0);
+  }
+
   .anticon {
-    font-size: 1.2rem;
+    font-size: 1.2em;
   }
 `;
 
@@ -159,14 +182,14 @@ export const Contact: React.FC = () => {
           </IconContainer>
           <h2>{content.title}</h2>
           <p>{content.description}</p>
-          <WhatsAppButton 
-            href="https://wa.me/6512345678" 
+          <EmailButton 
+            href="mailto:contact@futureai.com" 
             target="_blank" 
             rel="noopener noreferrer"
           >
-            <WhatsAppOutlined />
-            {content.whatsappButton}
-          </WhatsAppButton>
+            <MailOutlined />
+            {content.emailButton}
+          </EmailButton>
         </InfoSection>
 
         <FormSection
@@ -175,7 +198,7 @@ export const Contact: React.FC = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <StyledForm
+          <Form
             form={form}
             layout="vertical"
             onFinish={handleSubmit}
@@ -208,12 +231,12 @@ export const Contact: React.FC = () => {
             </Form.Item>
 
             <Form.Item>
-              <Button type="primary" htmlType="submit" className="submit-btn">
+              <Button type="primary" htmlType="submit">
                 {content.form.submit}
                 <SendOutlined />
               </Button>
             </Form.Item>
-          </StyledForm>
+          </Form>
         </FormSection>
       </Container>
     </ContactSection>

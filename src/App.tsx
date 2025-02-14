@@ -12,6 +12,7 @@ import Footer from './components/Footer/Footer';
 import VisionMission from './components/VisionMission/VisionMission';
 import Advantages from './components/Advantages/Advantages';
 import { LanguageProvider } from './context/LanguageContext';
+import { GlobalStyle } from './styles/globalStyles';
 
 const { Content } = Layout;
 
@@ -26,6 +27,7 @@ const StyledContent = styled(Content)`
 const App: React.FC = () => {
   return (
     <LanguageProvider>
+      <GlobalStyle />
       <StyledLayout>
         <Navbar />
         <StyledContent>

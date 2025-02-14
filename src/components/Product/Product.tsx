@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { motion } from 'framer-motion';
 import { theme } from '../../types/theme';
 import { useLanguage } from '../../context/LanguageContext';
@@ -48,15 +48,10 @@ const Subtitle = styled.h3`
   font-weight: normal;
   justify-content: center;
   text-align: center;
-`;
 
-const Title = styled.h2`
-  font-size: 2.8rem;
-  color: ${theme.colors.primary};
-  margin-bottom: 24px;
-  font-weight: 600;
-  justify-content: center;
-  text-align: center;
+  @media (max-width: 768px) {
+    font-size: 1rem;
+  }
 `;
 
 const Description = styled.p`
@@ -123,6 +118,46 @@ const FeatureDescription = styled.p`
   margin: 0 auto;
 `;
 
+const gradientAnimation = keyframes`
+  0% {
+    background-position: 0% 50%
+  }
+  50% {
+    background-position: 100% 50%
+  }
+  100% {
+    background-position: 0% 50%
+  }
+`;
+
+const AnimatedTitle = styled(SectionTitle)`
+  font-size: 3.8rem;
+  letter-spacing: 2px;
+  background: linear-gradient(
+    130deg,
+    #FF6600 0%,
+    #FF8533 15%,
+    #E2B33E 30%,
+    #FF6600 45%,
+    #FFB366 60%,
+    #FF8533 75%,
+    #FF6600 85%,
+    #E2B33E 100%,
+    #FF6600 100%
+  );
+  background-size: 200% 200%;
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: ${gradientAnimation} 7s ease infinite;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+
+  @media (max-width: 768px) {
+    font-size: 2.5rem;
+  }
+`;
+
 const Product: React.FC = () => {
   const { language } = useLanguage();
   const content = productContent[language];
@@ -164,7 +199,7 @@ const Product: React.FC = () => {
       </BackgroundImage>
       <Container>
         <Subtitle>{content.subtitle}</Subtitle>
-        <SectionTitle>{content.title}</SectionTitle>
+        <AnimatedTitle>{content.title}</AnimatedTitle>
         <Description>{content.description}</Description>
         <FeaturesGrid>
           {features.map((feature, index) => (

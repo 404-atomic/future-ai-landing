@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { scroller } from 'react-scroll';
+import { Link, useLocation } from 'react-router-dom';
 import { MenuOutlined, CloseOutlined } from '@ant-design/icons';
 import { theme } from '../../types/theme';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -211,17 +212,52 @@ interface NavigationItemProps {
   to: string;
   children: React.ReactNode;
   onClick?: () => void;
+  isPage?: boolean;
+  isHashLink?: boolean;
 }
 
-const NavigationItem: React.FC<NavigationItemProps> = ({ to, children, onClick }) => {
+const NavigationItem: React.FC<NavigationItemProps> = ({ to, children, onClick, isPage, isHashLink }) => {
+  const location = useLocation();
+  
   const handleClick = () => {
-    scroller.scrollTo(to, {
-      duration: 800,
-      delay: 0,
-      smooth: 'easeInOutQuart',
-    });
+    if (!isPage && !isHashLink) {
+      // This is a section on the home page, use scroll
+      scroller.scrollTo(to, {
+        duration: 800,
+        delay: 0,
+        smooth: 'easeInOutQuart',
+      });
+    }
     if (onClick) onClick();
   };
+
+  if (isPage) {
+    return (
+      <Link to={to} style={{ textDecoration: 'none' }}>
+        <StyledNavItem
+          onClick={onClick}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          {children}
+        </StyledNavItem>
+      </Link>
+    );
+  }
+
+  if (isHashLink) {
+    return (
+      <Link to={to} style={{ textDecoration: 'none' }}>
+        <StyledNavItem
+          onClick={onClick}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          {children}
+        </StyledNavItem>
+      </Link>
+    );
+  }
 
   return (
     <StyledNavItem
@@ -237,6 +273,8 @@ const NavigationItem: React.FC<NavigationItemProps> = ({ to, children, onClick }
 interface MenuItem {
   to: string;
   label: NavItem;
+  isPage?: boolean;
+  isHashLink?: boolean;
 }
 
 const MENU_ITEMS: MenuItem[] = [
@@ -245,12 +283,13 @@ const MENU_ITEMS: MenuItem[] = [
   { to: 'vision-mission', label: 'vision' },
   { to: 'advantages', label: 'advantages' },
   { to: 'services', label: 'services' },
+  { to: 'blog', label: 'blog'},
   { to: 'contact', label: 'contact' },
 ];
 
 const Navbar: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const { language, setLanguage } = useLanguage();
   const content = navContent[language];
 
@@ -276,9 +315,11 @@ const Navbar: React.FC = () => {
         <NavLinks isOpen={isOpen}>
           {MENU_ITEMS.map((item) => (
             <NavigationItem
-              key={item.to}
+              key={item.label}
               to={item.to}
-              onClick={() => setIsOpen(false)}
+              onClick={isOpen ? () => setIsOpen(false) : undefined}
+              isPage={item.isPage}
+              isHashLink={item.isHashLink}
             >
               {content[item.label]}
             </NavigationItem>

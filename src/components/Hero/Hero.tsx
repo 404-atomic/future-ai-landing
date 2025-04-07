@@ -1,6 +1,7 @@
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { scroller } from 'react-scroll';
 import { theme } from '../../types/theme';
 import { useLanguage } from '../../context/LanguageContext';
@@ -296,6 +297,61 @@ const GetStartedButton = styled(motion.button)`
   }
 `;
 
+const NavLink = styled(motion(Link))`
+  margin-top: 40px;
+  padding: 16px 32px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+
+  .anticon {
+    font-size: 0.9em;
+    transition: transform 0.3s ease;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+
+    .anticon {
+      transform: translateX(4px);
+    }
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  @media (max-width: 768px) {
+    font-size: 0.8rem;
+  }
+`;
+
+const DocLink = styled(NavLink)`
+  background: transparent;
+  border: 2px solid ${theme.colors.primary};
+  color: ${theme.colors.primary};
+  
+`;
+
+const ButtonsContainer = styled.div`
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 15px;
+  }
+`;
+
 // Wave configuration
 const WAVE_CONFIG = [
   { delay: 10, bottom: -5, opacity: 0.3 },
@@ -339,14 +395,16 @@ const Hero: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.8 }}
         >
-          <GetStartedButton
-            onClick={handleGetStarted}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            {content.getStarted}
-            <RightOutlined />
-          </GetStartedButton>
+          <ButtonsContainer>
+            <DocLink
+              to="https://404-984da704.mintlify.app/"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              {content.documentation}
+              <RightOutlined />
+            </DocLink>
+          </ButtonsContainer>
         </motion.div>
       </ContentWrapper>
     </HeroSection>

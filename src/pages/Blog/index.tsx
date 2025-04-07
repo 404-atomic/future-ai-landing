@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { theme } from '../../types/theme';
 import { useLanguage } from '../../context/LanguageContext';
+import { client, urlFor } from '../../sanity/client';
 import { CalendarOutlined, UserOutlined, TagOutlined } from '@ant-design/icons';
 
 // Styled components
@@ -208,79 +209,53 @@ const FeaturedMeta = styled(MetaContainer)`
   margin-bottom: 20px;
 `;
 
-// Blog post data
-const posts = [
-  {
-    id: 1,
-    title: 'How AI is Transforming Industries in Singapore',
-    excerpt: 'Discover how AI technologies are revolutionizing multiple sectors across Singapore, from finance to healthcare.',
-    image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-    date: 'April 15, 2023',
-    author: 'David Chen',
-    tags: 'AI, Industry',
-    featured: true
-  },
-  {
-    id: 2,
-    title: 'The Future of Machine Learning in Enterprise Solutions',
-    excerpt: 'Explore how machine learning algorithms are being integrated into enterprise-level applications.',
-    image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-    date: 'March 28, 2023',
-    author: 'Sarah Wong',
-    tags: 'Machine Learning, Enterprise'
-  },
-  {
-    id: 3,
-    title: 'Building Smarter Cities with IoT and AI',
-    excerpt: 'Learn how the combination of IoT devices and AI analytics is creating more efficient urban environments.',
-    image: 'https://images.unsplash.com/photo-1519501025264-65ba15a82390?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-    date: 'March 12, 2023',
-    author: 'Michael Tan',
-    tags: 'Smart Cities, IoT'
-  },
-  {
-    id: 4,
-    title: 'Ethical Considerations in AI Development',
-    excerpt: 'Addressing the important ethical questions that arise as AI becomes more prevalent in society.',
-    image: 'https://images.unsplash.com/photo-1531297484001-80022131f5a1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-    date: 'February 25, 2023',
-    author: 'Lisa Johnson',
-    tags: 'Ethics, AI'
-  },
-  {
-    id: 5,
-    title: 'The Role of Data Science in Modern Business Strategy',
-    excerpt: 'How data-driven decision making is becoming central to successful business strategies.',
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-    date: 'February 10, 2023',
-    author: 'Robert Zhang',
-    tags: 'Data Science, Business'
-  },
-  {
-    id: 6,
-    title: 'Natural Language Processing: Advances and Applications',
-    excerpt: 'Recent breakthroughs in NLP and how they are being applied in various domains.',
-    image: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-    date: 'January 30, 2023',
-    author: 'Emily Lim',
-    tags: 'NLP, AI Applications'
-  }
-];
-
+// Interface for Sanity post
 interface Post {
-  id: number;
+  _id: string;
   title: string;
-  excerpt: string;
-  image: string;
+  excerpt?: string;
+  image?: any;
   date: string;
   author: string;
-  tags: string;
+  tags?: string;
   featured?: boolean;
 }
 
 const BlogPage: React.FC = () => {
   const { language } = useLanguage();
-  const featuredPost = posts.find(post => post.featured) as Post;
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        // GROQ query to fetch all posts
+        const query = `*[_type == "post"] | order(date desc) {
+          _id,
+          title,
+          excerpt,
+          image,
+          date,
+          author,
+          tags,
+          featured
+        }`;
+        
+        const fetchedPosts = await client.fetch<Post[]>(query);
+        setPosts(fetchedPosts);
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+        setError("Failed to load blog posts. Please check your Sanity configuration.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchPosts();
+  }, []);
+  
+  const featuredPost = posts.find(post => post.featured);
   const regularPosts = posts.filter(post => !post.featured);
   
   const content = {
@@ -288,15 +263,41 @@ const BlogPage: React.FC = () => {
       heading: 'Our Blog',
       subheading: 'Stay updated with the latest insights, news, and trends in AI and technology innovation.',
       readMore: 'Read More',
-      featuredButton: 'Read Featured Article'
+      featuredButton: 'Read Featured Article',
+      loading: 'Loading posts...',
+      error: "Failed to load blog posts. Please check your Sanity configuration."
     },
     zh: {
       heading: '我们的博客',
       subheading: '及时了解人工智能和技术创新方面的最新见解、新闻和趋势。',
       readMore: '阅读更多',
-      featuredButton: '阅读精选文章'
+      featuredButton: '阅读精选文章',
+      loading: '加载文章...',
+      error: "加载博客文章失败。请检查您的Sanity配置。"
     }
   };
+  
+  if (loading) {
+    return (
+      <BlogContainer>
+        <PageHeader>
+          <Heading>{content[language].heading}</Heading>
+          <Subheading>{content[language].loading}</Subheading>
+        </PageHeader>
+      </BlogContainer>
+    );
+  }
+  
+  if (error) {
+    return (
+      <BlogContainer>
+        <PageHeader>
+          <Heading>{content[language].heading}</Heading>
+          <Subheading style={{ color: '#f5222d' }}>{error}</Subheading>
+        </PageHeader>
+      </BlogContainer>
+    );
+  }
   
   return (
     <BlogContainer>
@@ -307,22 +308,26 @@ const BlogPage: React.FC = () => {
       
       {featuredPost && (
         <Featured>
-          <FeaturedImage imageUrl={featuredPost.image} />
+          <FeaturedImage 
+            imageUrl={featuredPost.image ? urlFor(featuredPost.image).width(1200).height(500).url() : 'https://via.placeholder.com/1200x500'} 
+          />
           <FeaturedContent>
             <FeaturedMeta>
               <MetaItem>
-                <CalendarOutlined /> {featuredPost.date}
+                <CalendarOutlined /> {new Date(featuredPost.date).toLocaleDateString()}
               </MetaItem>
               <MetaItem>
                 <UserOutlined /> {featuredPost.author}
               </MetaItem>
-              <MetaItem>
-                <TagOutlined /> {featuredPost.tags}
-              </MetaItem>
+              {featuredPost.tags && (
+                <MetaItem>
+                  <TagOutlined /> {featuredPost.tags}
+                </MetaItem>
+              )}
             </FeaturedMeta>
             <FeaturedTitle>{featuredPost.title}</FeaturedTitle>
-            <FeaturedExcerpt>{featuredPost.excerpt}</FeaturedExcerpt>
-            <FeaturedButton href={`/blog/${featuredPost.id}`}>
+            {featuredPost.excerpt && <FeaturedExcerpt>{featuredPost.excerpt}</FeaturedExcerpt>}
+            <FeaturedButton href={`/blog/${featuredPost._id}`}>
               {content[language].featuredButton}
             </FeaturedButton>
           </FeaturedContent>
@@ -332,28 +337,32 @@ const BlogPage: React.FC = () => {
       <BlogGrid>
         {regularPosts.map(post => (
           <BlogCard 
-            key={post.id} 
+            key={post._id} 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
           >
-            <BlogImage imageUrl={post.image} />
+            <BlogImage 
+              imageUrl={post.image ? urlFor(post.image).width(400).height(220).url() : 'https://via.placeholder.com/400x220'} 
+            />
             <BlogContent>
               <BlogTitle>{post.title}</BlogTitle>
               <MetaContainer>
                 <MetaItem>
-                  <CalendarOutlined /> {post.date}
+                  <CalendarOutlined /> {new Date(post.date).toLocaleDateString()}
                 </MetaItem>
                 <MetaItem>
                   <UserOutlined /> {post.author}
                 </MetaItem>
-                <MetaItem>
-                  <TagOutlined /> {post.tags}
-                </MetaItem>
+                {post.tags && (
+                  <MetaItem>
+                    <TagOutlined /> {post.tags}
+                  </MetaItem>
+                )}
               </MetaContainer>
-              <BlogExcerpt>{post.excerpt}</BlogExcerpt>
-              <ReadMoreButton href={`/blog/${post.id}`}>
+              {post.excerpt && <BlogExcerpt>{post.excerpt}</BlogExcerpt>}
+              <ReadMoreButton href={`/blog/${post._id}`}>
                 {content[language].readMore}
               </ReadMoreButton>
             </BlogContent>

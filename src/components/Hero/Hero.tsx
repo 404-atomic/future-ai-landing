@@ -2,7 +2,6 @@ import React from 'react';
 import styled, { keyframes } from 'styled-components';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { scroller } from 'react-scroll';
 import { theme } from '../../types/theme';
 import { useLanguage } from '../../context/LanguageContext';
 import { heroContent } from './content';
@@ -207,22 +206,14 @@ const HighlightText = styled.span`
 `;
 
 const SubtitleContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 1rem;
-  z-index: 2;
-  padding: 1rem;
-  border-radius: 8px;
-  max-width: 90%;
-  width: 100%;
-  backdrop-filter: blur(5px);
-
+  position: relative;
+  max-width: 700px;
+  margin: 0 auto;
+  margin-bottom: 20px;
+  
   @media (max-width: 768px) {
-    justify-content: flex-start;
-    padding: 0.8rem 0;
-    max-width: 85%;
-    margin-top: 1.5rem;
+    max-width: 100%;
+    margin-bottom: 10px;
   }
 `;
 
@@ -255,45 +246,6 @@ const Subtitle = styled.div`
   @media (max-width: 480px) {
     font-size: 0.8rem;
     max-width: 100%;
-  }
-`;
-
-const GetStartedButton = styled(motion.button)`
-  margin-top: 40px;
-  padding: 16px 32px;
-  font-size: 1.1rem;
-  font-weight: 500;
-  color: white;
-  background: linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.secondary});
-  border: none;
-  border-radius: 30px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px ${theme.colors.primary}40;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  .anticon {
-    font-size: 0.9em;
-    transition: transform 0.3s ease;
-  }
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px ${theme.colors.primary}60;
-
-    .anticon {
-      transform: translateX(4px);
-    }
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-
-  @media (max-width: 768px) {
-    font-size: 0.8rem;
   }
 `;
 
@@ -363,14 +315,6 @@ const WAVE_CONFIG = [
 const Hero: React.FC = () => {
   const { language } = useLanguage();
   const content = heroContent[language];
-
-  const handleGetStarted = () => {
-    scroller.scrollTo('contact', {
-      duration: 800,
-      delay: 0,
-      smooth: 'easeInOutQuart'
-    });
-  };
 
   return (
     <HeroSection>

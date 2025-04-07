@@ -1,11 +1,10 @@
 import React from 'react';
 import { Row, Col } from 'antd';
-import { TeamOutlined, GlobalOutlined, BookOutlined, ApiOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { theme } from '../../types/theme';
 import { useLanguage } from '../../context/LanguageContext';
-import { featuresContent, Feature } from './content';
+import { featuresContent } from './content';
 import { SectionTitle } from '../shared/StyledComponents';
 
 const FeatureSection = styled.section`

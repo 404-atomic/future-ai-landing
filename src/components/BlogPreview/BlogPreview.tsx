@@ -1,33 +1,38 @@
-import React, { useRef } from 'react';
-import { Carousel, Button } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Button } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { RightOutlined, LeftOutlined } from '@ant-design/icons';
+import { motion } from 'framer-motion';
 import { theme } from '../../types/theme';
 import { useLanguage } from '../../context/LanguageContext';
-import { CarouselRef } from 'antd/lib/carousel';
+import { client, urlFor } from '../../sanity/client';
+import { CalendarOutlined, UserOutlined, RightOutlined } from '@ant-design/icons';
 
+// Styled components
 const BlogPreviewSection = styled.section`
-  padding: 80px 0;
-  background: linear-gradient(135deg, rgba(255,102,0,0.05) 0%, rgba(226,179,62,0.1) 100%);
+  padding: 100px 20px;
+  background: ${theme.colors.background};
+  
+  @media (max-width: 768px) {
+    padding: 80px 20px;
+  }
 `;
 
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 20px;
 `;
 
 const SectionHeader = styled.div`
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 60px;
 `;
 
 const Title = styled.h2`
   font-size: 2.5rem;
   font-weight: 700;
-  margin-bottom: 16px;
   color: ${theme.colors.text};
+  margin-bottom: 15px;
   
   @media (max-width: 768px) {
     font-size: 2rem;
@@ -39,279 +44,269 @@ const Subtitle = styled.p`
   color: ${theme.colors.text}99;
   max-width: 600px;
   margin: 0 auto;
+  line-height: 1.6;
+`;
+
+const BlogGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  
+  @media (max-width: 992px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
   
   @media (max-width: 768px) {
-    font-size: 1rem;
+    grid-template-columns: 1fr;
   }
 `;
 
-const CarouselWrapper = styled.div`
-  margin-bottom: 40px;
-  position: relative;
-  
-  .ant-carousel .slick-dots-bottom {
-    bottom: -30px;
-  }
-  
-  .ant-carousel .slick-dots li button {
-    background: ${theme.colors.primary}50;
-    height: 8px;
-    width: 8px;
-    border-radius: 50%;
-  }
-  
-  .ant-carousel .slick-dots li.slick-active button {
-    background: ${theme.colors.primary};
-  }
-`;
-
-const NavButton = styled.button`
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 10;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+const BlogCard = styled(motion.div)`
   background: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  transition: all 0.3s ease;
-  opacity: 0.7;
-  
-  &:hover {
-    opacity: 1;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-  }
-  
-  @media (max-width: 768px) {
-    width: 32px;
-    height: 32px;
-  }
-`;
-
-const PrevButton = styled(NavButton)`
-  left: -20px;
-  
-  @media (max-width: 768px) {
-    left: 10px;
-  }
-`;
-
-const NextButton = styled(NavButton)`
-  right: -20px;
-  
-  @media (max-width: 768px) {
-    right: 10px;
-  }
-`;
-
-const SlideItem = styled.div`
-  height: 400px;
-  overflow: hidden;
-  position: relative;
   border-radius: 12px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  transition: transform 0.3s ease;
+  overflow: hidden;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
   
   &:hover {
-    transform: scale(1.01);
-  }
-  
-  @media (max-width: 768px) {
-    height: 320px;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   }
 `;
 
-const SlideImage = styled.div<{ imageUrl: string }>`
-  height: 100%;
+const BlogImage = styled.div<{ imageUrl: string }>`
+  height: 200px;
   background-image: url(${props => props.imageUrl});
   background-size: cover;
   background-position: center;
 `;
 
-const SlideContent = styled.div`
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 30px;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
-  color: white;
+const BlogContent = styled.div`
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
 `;
 
-const SlideTitle = styled.h3`
-  font-size: 1.8rem;
+const BlogTitle = styled.h3`
+  font-size: 1.3rem;
   font-weight: 600;
-  margin-bottom: 10px;
-  
-  @media (max-width: 768px) {
-    font-size: 1.4rem;
-  }
+  margin-bottom: 15px;
+  color: ${theme.colors.text};
+  line-height: 1.4;
 `;
 
-const SlideExcerpt = styled.p`
-  font-size: 1rem;
-  opacity: 0.8;
-  margin-bottom: 20px;
-  
-  @media (max-width: 768px) {
-    font-size: 0.9rem;
-  }
-`;
-
-const SlideInfo = styled.div`
+const MetaInfo = styled.div`
   display: flex;
   gap: 15px;
   font-size: 0.85rem;
-  opacity: 0.7;
+  color: ${theme.colors.text}77;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
 `;
 
-const ReadMoreButton = styled.button`
-  background: ${theme.colors.primary};
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  margin-top: 15px;
-  cursor: pointer;
+const MetaItem = styled.div`
   display: flex;
   align-items: center;
   gap: 5px;
-  transition: all 0.3s ease;
+`;
+
+const BlogExcerpt = styled.p`
+  font-size: 0.95rem;
+  color: ${theme.colors.text}99;
+  margin-bottom: 20px;
+  line-height: 1.6;
+  flex-grow: 1;
+`;
+
+const ReadMoreLink = styled(Link)`
+  color: ${theme.colors.primary};
+  font-weight: 500;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: auto;
   
   &:hover {
-    background: ${theme.colors.secondary};
+    color: ${theme.colors.secondary};
   }
+`;
+
+const ViewAllButtonContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 50px;
 `;
 
 const ViewAllButton = styled(Button)`
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.secondary});
-  border: none;
-  height: 48px;
-  padding: 0 32px;
+  background: ${theme.colors.primary};
+  border-color: ${theme.colors.primary};
+  padding: 0 30px;
+  height: 44px;
   font-size: 1rem;
-  font-weight: 500;
   
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 15px ${theme.colors.primary}40;
+    background: ${theme.colors.secondary};
+    border-color: ${theme.colors.secondary};
   }
 `;
 
-// Blog post data
-const posts = [
-  {
-    id: 1,
-    title: 'How AI is Transforming Industries in Singapore',
-    excerpt: 'Discover how AI technologies are revolutionizing multiple sectors across Singapore, from finance to healthcare.',
-    image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-    date: 'April 15, 2023',
-    author: 'David Chen'
-  },
-  {
-    id: 2,
-    title: 'The Future of Machine Learning in Enterprise Solutions',
-    excerpt: 'Explore how machine learning algorithms are being integrated into enterprise-level applications.',
-    image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-    date: 'March 28, 2023',
-    author: 'Sarah Wong'
-  },
-  {
-    id: 3,
-    title: 'Building Smarter Cities with IoT and AI',
-    excerpt: 'Learn how the combination of IoT devices and AI analytics is creating more efficient urban environments.',
-    image: 'https://images.unsplash.com/photo-1519501025264-65ba15a82390?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-    date: 'March 12, 2023',
-    author: 'Michael Tan'
-  }
-];
+// Fetch the latest 3 blog posts from Sanity
+const POSTS_QUERY = `*[_type == "post"] | order(date desc)[0...3]{
+  _id,
+  title,
+  excerpt,
+  image,
+  date,
+  author,
+  tags
+}`;
+
+// Interface for Sanity post
+interface Post {
+  _id: string;
+  title: string;
+  excerpt?: string;
+  image?: any;
+  date: string;
+  author: string;
+  tags?: string;
+}
 
 const BlogPreview: React.FC = () => {
   const { language } = useLanguage();
-  const carouselRef = useRef<CarouselRef>(null);
   const navigate = useNavigate();
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const fetchedPosts = await client.fetch<Post[]>(POSTS_QUERY);
+        setPosts(fetchedPosts);
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+        setError("Failed to load blog posts. Please check your Sanity configuration.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchPosts();
+  }, []);
   
   const content = {
     en: {
-      title: 'Latest Blog Posts',
-      subtitle: 'Stay updated with our latest insights and trends in AI technology',
+      heading: 'Latest Blog Posts',
+      subheading: 'Stay updated with the latest insights, news, and trends in AI and technology.',
       viewAll: 'View All Posts',
-      readTime: 'min read',
-      readMore: 'Read More'
+      readMore: 'Read More',
+      loading: 'Loading blog posts...',
+      noPosts: 'No blog posts found.',
+      error: "Failed to load blog preview. Please check your Sanity configuration."
     },
     zh: {
-      title: '最新博客文章',
-      subtitle: '及时了解我们关于人工智能技术的最新见解和趋势',
+      heading: '最新博客文章',
+      subheading: '了解人工智能和技术的最新见解、新闻和趋势。',
       viewAll: '查看所有文章',
-      readTime: '分钟阅读',
-      readMore: '阅读更多'
+      readMore: '阅读更多',
+      loading: '加载博客文章...',
+      noPosts: '未找到博客文章。',
+      error: "加载博客预览失败。请检查您的Sanity配置。"
     }
   };
   
-  const handleSlideClick = (postId: number) => {
-    navigate(`/blog/${postId}`);
-  };
+  if (loading) {
+    return (
+      <BlogPreviewSection>
+        <Container>
+          <SectionHeader>
+            <Title>{content[language].heading}</Title>
+            <Subtitle>{content[language].loading}</Subtitle>
+          </SectionHeader>
+        </Container>
+      </BlogPreviewSection>
+    );
+  }
+  
+  if (error) {
+    return (
+      <BlogPreviewSection>
+        <Container>
+          <SectionHeader>
+            <Title>{content[language].heading}</Title>
+            <Subtitle style={{ color: '#f5222d' }}>{error}</Subtitle>
+          </SectionHeader>
+        </Container>
+      </BlogPreviewSection>
+    );
+  }
+  
+  if (posts.length === 0) {
+    return (
+      <BlogPreviewSection>
+        <Container>
+          <SectionHeader>
+            <Title>{content[language].heading}</Title>
+            <Subtitle>{content[language].noPosts}</Subtitle>
+          </SectionHeader>
+        </Container>
+      </BlogPreviewSection>
+    );
+  }
   
   return (
-    <BlogPreviewSection id="blog">
+    <BlogPreviewSection>
       <Container>
         <SectionHeader>
-          <Title>{content[language].title}</Title>
-          <Subtitle>{content[language].subtitle}</Subtitle>
+          <Title>{content[language].heading}</Title>
+          <Subtitle>{content[language].subheading}</Subtitle>
         </SectionHeader>
         
-        <CarouselWrapper>
-          <PrevButton onClick={() => carouselRef.current?.prev()}>
-            <LeftOutlined />
-          </PrevButton>
-          <NextButton onClick={() => carouselRef.current?.next()}>
-            <RightOutlined />
-          </NextButton>
-          
-          <Carousel autoplay effect="fade" ref={carouselRef}>
-            {posts.map(post => (
-              <div key={post.id}>
-                <SlideItem onClick={() => handleSlideClick(post.id)}>
-                  <SlideImage imageUrl={post.image} />
-                  <SlideContent>
-                    <SlideTitle>{post.title}</SlideTitle>
-                    <SlideExcerpt>{post.excerpt}</SlideExcerpt>
-                    <SlideInfo>
-                      <span>{post.author}</span>
-                      <span>•</span>
-                      <span>{post.date}</span>
-                      <span>•</span>
-                      <span>5 {content[language].readTime}</span>
-                    </SlideInfo>
-                    <ReadMoreButton>
-                      {content[language].readMore}
-                      <RightOutlined />
-                    </ReadMoreButton>
-                  </SlideContent>
-                </SlideItem>
-              </div>
-            ))}
-          </Carousel>
-        </CarouselWrapper>
+        <BlogGrid>
+          {posts.map((post) => (
+            <BlogCard 
+              key={post._id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              viewport={{ once: true }}
+            >
+              <BlogImage 
+                imageUrl={post.image ? urlFor(post.image).width(400).height(200).url() : 'https://via.placeholder.com/400x200'}
+              />
+              <BlogContent>
+                <BlogTitle>{post.title}</BlogTitle>
+                <MetaInfo>
+                  <MetaItem>
+                    <CalendarOutlined /> {new Date(post.date).toLocaleDateString()}
+                  </MetaItem>
+                  <MetaItem>
+                    <UserOutlined /> {post.author}
+                  </MetaItem>
+                </MetaInfo>
+                {post.excerpt && <BlogExcerpt>{post.excerpt}</BlogExcerpt>}
+                <ReadMoreLink to={`/blog/${post._id}`}>
+                  {content[language].readMore} <RightOutlined />
+                </ReadMoreLink>
+              </BlogContent>
+            </BlogCard>
+          ))}
+        </BlogGrid>
         
-        <Link to="/blog">
-          <ViewAllButton type="primary" size="large">
+        <ViewAllButtonContainer>
+          <ViewAllButton 
+            type="primary" 
+            onClick={() => navigate('/blog')}
+          >
             {content[language].viewAll}
-            <RightOutlined />
           </ViewAllButton>
-        </Link>
+        </ViewAllButtonContainer>
       </Container>
     </BlogPreviewSection>
   );

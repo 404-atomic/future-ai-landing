@@ -13,6 +13,7 @@ import VisionMission from './components/VisionMission/VisionMission';
 import Advantages from './components/Advantages/Advantages';
 import BlogPreview from './components/BlogPreview/BlogPreview';
 import BlogPage from './pages/Blog';
+import BlogPost from './pages/Blog/BlogPost';
 import { LanguageProvider } from './context/LanguageContext';
 import { GlobalStyle } from './styles/globalStyles';
 
@@ -50,7 +51,7 @@ const App: React.FC = () => {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/blog" element={<BlogPage />} />
-              <Route path="/blog/:id" element={<BlogPage />} />
+              <Route path="/blog/:id" element={<BlogPost />} />
             </Routes>
           </StyledContent>
           <Footer />

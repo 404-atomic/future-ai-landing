@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { scroller } from 'react-scroll';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { MenuOutlined, CloseOutlined } from '@ant-design/icons';
 import { theme } from '../../types/theme';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useLanguage } from '../../context/LanguageContext';
 import { navContent, NavItem } from './content';
 
@@ -217,8 +217,6 @@ interface NavigationItemProps {
 }
 
 const NavigationItem: React.FC<NavigationItemProps> = ({ to, children, onClick, isPage, isHashLink }) => {
-  const location = useLocation();
-  
   const handleClick = () => {
     if (!isPage && !isHashLink) {
       // This is a section on the home page, use scroll

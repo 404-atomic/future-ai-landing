@@ -1,4 +1,3 @@
-import { ReactNode } from 'react';
 import { TeamOutlined, GlobalOutlined, BookOutlined, ApiOutlined } from '@ant-design/icons';
 
 export const featuresContent = {
